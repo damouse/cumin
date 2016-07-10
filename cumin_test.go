@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCurrying(t *testing.T) {
 	Convey("Currying should return an error", t, func() {
 		Convey("If given a non-function", func() {
-			assert.Nil(t, nil)
+			_, err = NewCurry(1)
+			So(err, ShouldNotBeNil)
 		})
 	})
 }

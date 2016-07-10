@@ -61,7 +61,7 @@ func Cumin(fn interface{}, args []interface{}) ([]interface{}, error) {
 // Wraps the function fn in a Curry struct and returns it. Returns an error if fn
 // is not a function
 func NewCurry(fn interface{}) (*Curry, error) {
-
+	return nil, nil
 }
 
 // Wraps a function in a struct and extracts its name infromation.
