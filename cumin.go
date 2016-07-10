@@ -9,11 +9,20 @@ import (
 
 // Used to check for the presence of an error
 var errorInterface = reflect.TypeOf((*error)(nil)).Elem()
+var spicyInterface = reflect.TypeOf((*Spicy)(nil)).Elem()
 
+// A wrapped function
 type Curry struct {
 	fn     interface{}
 	fnType reflect.Type
 	name   string
+}
+
+// Curry.Invoke attempts to gracefully make types play nicely between incoming arrguments and expected types
+// If the expected type conforms to Spicy then Spicy.Convert is invoked with the argument, which allows
+// implementers to customize the conversion. This function *must* return the same type as its implementer
+type Spicy interface {
+	ConvertArgument(interface{}) (interface{}, error)
 }
 
 // Wraps the function fn in a Curry struct and returns it. Returns an error if fn
@@ -55,6 +64,11 @@ func (c *Curry) Invoke(args []interface{}) ([]interface{}, error) {
 	for i := 0; i < c.fnType.NumIn(); i++ {
 		param := c.fnType.In(i)
 		arg := getValueOf(args[i])
+
+		// This type wants to override conversion
+		if param.Implements(spicyInterface) {
+			// fmt.Println("Is Spicy")
+		}
 
 		if param == arg.Type() {
 			values[i] = arg

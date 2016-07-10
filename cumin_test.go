@@ -110,3 +110,23 @@ func TestErrReturn(t *testing.T) {
 		So(len(r), ShouldEqual, 0)
 	})
 }
+
+// Curried functions that take no args and have no return
+func TestSpicy(t *testing.T) {
+	fn := func(a int) {}
+	c, _ := NewCurry(fn)
+
+	Convey("Succeeds with good arguments", t, func() {
+		r, err := c.Invoke([]interface{}{1})
+
+		So(err, ShouldBeNil)
+		So(len(r), ShouldEqual, 0)
+	})
+
+	Convey("Fails with too many arguments", t, func() {
+		r, err := c.Invoke([]interface{}{1, 2})
+
+		So(r, ShouldBeNil)
+		So(err, ShouldNotBeNil)
+	})
+}
