@@ -26,7 +26,7 @@ func NewCurry(fn interface{}) (*Curry, error) {
 	}
 
 	c := &Curry{
-		name:   GetFunctionName(fn),
+		name:   getFunctionName(fn),
 		fnType: typ,
 		fn:     fn,
 	}
@@ -54,7 +54,7 @@ func (c *Curry) Invoke(args []interface{}) ([]interface{}, error) {
 
 	for i := 0; i < c.fnType.NumIn(); i++ {
 		param := c.fnType.In(i)
-		arg := GetValueOf(args[i])
+		arg := getValueOf(args[i])
 
 		if param == arg.Type() {
 			values[i] = arg
@@ -89,9 +89,8 @@ func (c *Curry) Invoke(args []interface{}) ([]interface{}, error) {
 	return ret, nil
 }
 
-// Reflects the function name and slices off the package. Panics if not given a
-// function
-func GetFunctionName(fn interface{}) string {
+// Reflects the function name and slices off the package. Panics if not given a function.
+func getFunctionName(fn interface{}) string {
 	name := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 
 	// Method above returns functions in the form :  main.foo
@@ -99,9 +98,8 @@ func GetFunctionName(fn interface{}) string {
 	return parts[len(parts)-1]
 }
 
-// Wraps reflect.ValueOf to handle the case where an integer value is stored as
-// a float64, as JSON unmarshal does.
-func GetValueOf(x interface{}) reflect.Value {
+// Wraps reflect.ValueOf to handle the case where an integer value is stored as a float64, as JSON unmarshal does.
+func getValueOf(x interface{}) reflect.Value {
 	value := reflect.ValueOf(x)
 
 	if value.Kind() == reflect.Float64 {
