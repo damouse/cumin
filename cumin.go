@@ -3,6 +3,8 @@ package cumin
 import (
 	"fmt"
 	"reflect"
+	"runtime"
+	"strings"
 )
 
 // Used to check for the presence of an error
@@ -61,7 +63,16 @@ func Cumin(fn interface{}, args []interface{}) ([]interface{}, error) {
 // Wraps the function fn in a Curry struct and returns it. Returns an error if fn
 // is not a function
 func NewCurry(fn interface{}) (*Curry, error) {
-	return nil, nil
+	if reflect.TypeOf(fn).Kind() != reflect.Func {
+		return nil, fmt.Errorf("Handler is not a function!")
+	}
+
+	c := &Curry{
+		name: GetFunctionName(fn),
+		fn:   fn,
+	}
+
+	return c, nil
 }
 
 // Wraps a function in a struct and extracts its name infromation.
@@ -74,6 +85,21 @@ type Curry struct {
 // that error is returned, else the results of the function are returned as a slice
 func (c *Curry) Invoke(args []interface{}) ([]interface{}, error) {
 	return nil, nil
+}
+
+// Return the name of the curried function
+func (c *Curry) Name() string {
+	return c.name
+}
+
+// Reflects the function name and slices off the package. Panics if not given a
+// function
+func GetFunctionName(fn interface{}) string {
+	name := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
+
+	// Method above returns functions in the form :  main.foo
+	parts := strings.Split(name, ".")
+	return parts[len(parts)-1]
 }
 
 // Wraps reflect.ValueOf to handle the case where an integer value is stored as

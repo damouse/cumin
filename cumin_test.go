@@ -5,15 +5,20 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestCurrying(t *testing.T) {
-	Convey("Currying should return an error", t, func() {
-		Convey("If given a non-function", func() {
-			_, err = NewCurry(1)
-			So(err, ShouldNotBeNil)
-		})
-	})
+func TestCurryNonFunction(t *testing.T) {
+	_, err := NewCurry(1)
+
+	assert.NotNil(t, err)
+}
+
+func TestCurryFunctionNames(t *testing.T) {
+	c, err := NewCurry(noneNone)
+
+	assert.Nil(t, err)
+	assert.Equal(t, "noneNone", c.Name())
 }
 
 func TestCuminUnpacking(t *testing.T) {
