@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Used to check for the presence of an error
 var errorInterface = reflect.TypeOf((*error)(nil)).Elem()
 
 // Convert and apply args to arbitrary function fn
@@ -55,6 +56,12 @@ func Cumin(fn interface{}, args []interface{}) ([]interface{}, error) {
 	}
 
 	return ret, nil
+}
+
+// Wraps the function fn in a Curry struct and returns it. Returns an error if fn
+// is not a function
+func NewCurry(fn interface{}) (*Curry, error) {
+
 }
 
 // Wraps a function in a struct and extracts its name infromation.

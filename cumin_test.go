@@ -1,12 +1,20 @@
 package cumin
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
 )
+
+func TestCurrying(t *testing.T) {
+	Convey("Currying should return an error", t, func() {
+		Convey("If given a non-function", func() {
+			assert.Nil(t, nil)
+		})
+	})
+}
 
 func TestCuminUnpacking(t *testing.T) {
 	Convey("Functions that return arguments", t, func() {
@@ -58,7 +66,6 @@ func TestCuminXNone(t *testing.T) {
 
 		Convey("Should accept one arg", func() {
 			_, e := Cumin(oneNone, []interface{}{1})
-
 			So(e, ShouldBeNil)
 		})
 	})
@@ -67,23 +74,3 @@ func TestCuminXNone(t *testing.T) {
 // Functions for cuminication
 func noneNone()     {}
 func oneNone(a int) {}
-
-// Run test arguments through a round of JSON
-func jsonicate(args ...interface{}) []interface{} {
-	var dat []interface{}
-	j, _ := json.Marshal(args)
-	if err := json.Unmarshal(j, &dat); err != nil {
-		panic(err)
-	}
-
-	return dat
-}
-
-func unmarshal(literal string) []interface{} {
-	var dat []interface{}
-	if err := json.Unmarshal([]byte(literal), &dat); err != nil {
-		panic(err)
-	}
-
-	return dat
-}
