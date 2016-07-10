@@ -8,9 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Functions for cuminication
+func noneNone()     {}
+func oneNone(a int) {}
+
 func TestCurryNonFunction(t *testing.T) {
 	_, err := NewCurry(1)
-
 	assert.NotNil(t, err)
 }
 
@@ -21,69 +24,89 @@ func TestCurryFunctionNames(t *testing.T) {
 	assert.Equal(t, "noneNone", c.Name())
 }
 
-func TestCurriedInvocation(t *testing.T) {
+// No args, no return
+func TestCurriedInvocationNone(t *testing.T) {
 	c, _ := NewCurry(noneNone)
 	r, err := c.Invoke([]interface{}{})
 
 	assert.Nil(t, err)
-	assert.Len(t, 0, r)
+	assert.Len(t, r, 0)
 }
 
-func TestCuminUnpacking(t *testing.T) {
-	Convey("Functions that return arguments", t, func() {
-		f := func() []interface{} {
-			return []interface{}{1, 2, 3}
+// Takes one arg, no return
+func TestCurriedInvocationArgs(t *testing.T) {
+	c, _ := NewCurry(oneNone)
+	r, err := c.Invoke([]interface{}{1})
+
+	assert.Nil(t, err)
+	assert.Len(t, r, 0)
+}
+
+// Curried functions that take no args and have no return
+func TestArgsNoReturn(t *testing.T) {
+	fn := func(a int) {}
+	c, _ := NewCurry(fn)
+
+	Convey("Succeeds with good arguments", t, func() {
+		r, err := c.Invoke([]interface{}{1})
+
+		So(err, ShouldBeNil)
+		So(len(r), ShouldEqual, 0)
+	})
+
+	Convey("Fails with too many arguments", t, func() {
+		r, err := c.Invoke([]interface{}{1, 2})
+
+		So(r, ShouldBeNil)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestNoArgsReturn(t *testing.T) {
+	fn := func() int {
+		return 1
+	}
+
+	c, _ := NewCurry(fn)
+
+	Convey("Succeeds with good arguments", t, func() {
+		r, err := c.Invoke([]interface{}{})
+
+		So(err, ShouldBeNil)
+		So(len(r), ShouldEqual, 1)
+		So(r[0], ShouldEqual, 1)
+	})
+
+	Convey("Fails with too many arguments", t, func() {
+		r, err := c.Invoke([]interface{}{1, 2})
+
+		So(r, ShouldBeNil)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestErrReturn(t *testing.T) {
+	fn := func(a int, b string) (int, error) {
+		if a == 1 {
+			return 0, fmt.Errorf("some error")
+		} else {
+			return 1, nil
 		}
+	}
 
-		Convey("Should output just those arguments", func() {
-			q := []interface{}{1, 2, 3}
+	c, _ := NewCurry(fn)
 
-			r, _ := Cumin(f, []interface{}{})
-			So(len(r[0].([]interface{})), ShouldEqual, len(q))
-		})
+	Convey("Forwards internal errors", t, func() {
+		r, err := c.Invoke([]interface{}{1, ""})
+
+		So(err.Error(), ShouldEqual, "some error")
+		So(len(r), ShouldEqual, 0)
 	})
 
-	Convey("Functions that return an error", t, func() {
-		// A function that conditionally returns an error
-		f := func(t bool) ([]interface{}, error) {
-			if t {
-				return nil, fmt.Errorf("An error")
-			} else {
-				return []interface{}{1, 2, 3}, nil
-			}
-		}
+	Convey("Returns nothing on bad arguments", t, func() {
+		r, err := c.Invoke([]interface{}{})
 
-		// The arguments for that function
-		q := []interface{}{1, 2, 3}
-
-		Convey("Should not return that error if it was nil ", func() {
-			r, _ := Cumin(f, []interface{}{false})
-			So(len(r[0].([]interface{})), ShouldEqual, len(q))
-			So(len(r), ShouldEqual, 1)
-		})
-
-		Convey("Should only return the error if one occured", func() {
-			r, e := Cumin(f, []interface{}{true})
-			So(e.Error(), ShouldEqual, "An error")
-			So(len(r), ShouldEqual, 0)
-		})
+		So(err, ShouldNotBeNil)
+		So(len(r), ShouldEqual, 0)
 	})
 }
-
-func TestCuminXNone(t *testing.T) {
-	Convey("Functions that return nothing", t, func() {
-		Convey("Should accept no args", func() {
-			_, e := Cumin(noneNone, []interface{}{})
-			So(e, ShouldBeNil)
-		})
-
-		Convey("Should accept one arg", func() {
-			_, e := Cumin(oneNone, []interface{}{1})
-			So(e, ShouldBeNil)
-		})
-	})
-}
-
-// Functions for cuminication
-func noneNone()     {}
-func oneNone(a int) {}
