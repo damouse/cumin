@@ -57,6 +57,18 @@ func Cumin(fn interface{}, args []interface{}) ([]interface{}, error) {
 	return ret, nil
 }
 
+// Wraps a function in a struct and extracts its name infromation.
+type Curry struct {
+	fn   interface{} // the function
+	name string      // name of the function
+}
+
+// Invokes a curried function with the passed arguments. If the function returned an error
+// that error is returned, else the results of the function are returned as a slice
+func (c *Curry) Invoke(args []interface{}) ([]interface{}, error) {
+	return nil, nil
+}
+
 // Wraps reflect.ValueOf to handle the case where an integer value is stored as
 // a float64, as JSON unmarshal does.
 func GetValueOf(x interface{}) reflect.Value {

@@ -10,8 +10,8 @@ import (
 
 type asdf struct{}
 
-func (a asdf) receiver() {}
-func foo()               {}
+func (a asdf) bar() {}
+func foo()          {}
 
 func GetFunctionName(i interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
@@ -27,7 +27,7 @@ func testnames() {
 
 	// main.(asdf).(main.receiver)
 	a := asdf{}
-	fmt.Println("name:", GetFunctionName(a.receiver))
+	fmt.Println("name:", GetFunctionName(a.bar))
 }
 
 func receive(a int, b string, c float64, d []string, e map[string]interface{}) (string, error) {
@@ -36,6 +36,8 @@ func receive(a int, b string, c float64, d []string, e map[string]interface{}) (
 }
 
 func main() {
+	testnames()
+
 	res, err := cumin.Cumin(receive, []interface{}{1, "2", float64(3), []string{"4", "5"}, map[string]interface{}{"6": 7}})
 
 	if err != nil {

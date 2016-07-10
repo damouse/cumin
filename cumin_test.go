@@ -18,7 +18,6 @@ func TestCuminUnpacking(t *testing.T) {
 			q := []interface{}{1, 2, 3}
 
 			r, _ := Cumin(f, []interface{}{})
-			fmt.Printf("%v\n", r)
 			So(len(r[0].([]interface{})), ShouldEqual, len(q))
 		})
 	})
@@ -38,7 +37,6 @@ func TestCuminUnpacking(t *testing.T) {
 
 		Convey("Should not return that error if it was nil ", func() {
 			r, _ := Cumin(f, []interface{}{false})
-			fmt.Printf("%v\n", r)
 			So(len(r[0].([]interface{})), ShouldEqual, len(q))
 			So(len(r), ShouldEqual, 1)
 		})
