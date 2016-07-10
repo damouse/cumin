@@ -21,6 +21,14 @@ func TestCurryFunctionNames(t *testing.T) {
 	assert.Equal(t, "noneNone", c.Name())
 }
 
+func TestCurriedInvocation(t *testing.T) {
+	c, _ := NewCurry(noneNone)
+	r, err := c.Invoke([]interface{}{})
+
+	assert.Nil(t, err)
+	assert.Len(t, 0, r)
+}
+
 func TestCuminUnpacking(t *testing.T) {
 	Convey("Functions that return arguments", t, func() {
 		f := func() []interface{} {
