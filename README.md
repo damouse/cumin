@@ -15,9 +15,9 @@ fn := func() int {
 
 c, _ := NewCurry(fn)
 
-# Returns 1
+// Returns 1
 r, err := c.Invoke([]interface{}{})
 
-# Returns an invocation error: too many arguments
+// Returns an invocation error: too many arguments
 r, err := c.Invoke([]interface{}{1, 2})
 ```
